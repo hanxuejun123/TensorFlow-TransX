@@ -122,7 +122,7 @@ def main(_):
 			saver = tf.train.Saver()
 			sess.run(tf.initialize_all_variables())
 			if (config.loadFromData):
-				saver.restore(sess, 'model.vec')
+				saver.restore(sess, './res/model.vec')
 
 			def train_step(pos_h_batch, pos_t_batch, pos_r_batch, neg_h_batch, neg_t_batch, neg_r_batch):
 				feed_dict = {
@@ -176,7 +176,7 @@ def main(_):
 						current_step = tf.train.global_step(sess, global_step)
 					print times
 					print res
-				saver.save(sess, 'model.vec')
+				saver.save(sess, './res/model.vec')
 			else:
 				total = test_lib.getTestTotal()
 				for times in range(total):
