@@ -66,6 +66,7 @@ class TransRModel(object):
 			neg_h_e = tf.reshape(tf.nn.embedding_lookup(self.ent_embeddings, self.neg_h), [-1, sizeE])
 			neg_t_e = tf.reshape(tf.nn.embedding_lookup(self.ent_embeddings, self.neg_t), [-1, sizeE])
 			neg_r_e = tf.reshape(tf.nn.embedding_lookup(self.rel_embeddings, self.neg_r), [-1, sizeR, 1])
+			
 			matrix_pos_h = tf.reshape(tf.nn.embedding_lookup(self.ent_matrix, self.pos_h), [-1, sizeE, sizeR])
 			matrix_pos_t = tf.reshape(tf.nn.embedding_lookup(self.ent_matrix, self.pos_t), [-1, sizeE, sizeR])
 			matrix_neg_h = tf.reshape(tf.nn.embedding_lookup(self.ent_matrix, self.neg_h), [-1, sizeE, sizeR])
