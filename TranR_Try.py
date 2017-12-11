@@ -49,7 +49,7 @@ class TransRModel(object):
 			self.ent_embeddings = tf.get_variable(name = "ent_embedding", shape = [entity_total, sizeE], initializer = tf.contrib.layers.xavier_initializer(uniform = False))
 			self.rel_embeddings = tf.get_variable(name = "rel_embedding", shape = [relation_total, sizeR], initializer = tf.contrib.layers.xavier_initializer(uniform = False))
 			#change rel_matrix to ent_matrix, size E*sizeR to sizeR*sizeE.
-			self.ent_matrix = tf.get_variable(name = "rel_matrix", shape = [relation_total, sizeR * sizeE], initializer = tf.contrib.layers.xavier_initializer(uniform = False))
+			self.ent_matrix = tf.get_variable(name = "ent_matrix", shape = [entity_total, sizeR * sizeE], initializer = tf.contrib.layers.xavier_initializer(uniform = False))
 
 		with tf.name_scope('lookup_embeddings'):
 # 			pos_h_e = tf.reshape(tf.nn.embedding_lookup(self.ent_embeddings, self.pos_h), [-1, sizeE, 1])
