@@ -48,7 +48,8 @@ class TransRModel(object):
 		with tf.name_scope("embedding"):
 			self.ent_embeddings = tf.get_variable(name = "ent_embedding", shape = [entity_total, sizeE], initializer = tf.contrib.layers.xavier_initializer(uniform = False))
 			self.rel_embeddings = tf.get_variable(name = "rel_embedding", shape = [relation_total, sizeR], initializer = tf.contrib.layers.xavier_initializer(uniform = False))
-			self.rel_matrix = tf.get_variable(name = "rel_matrix", shape = [relation_total, sizeE * sizeR], initializer = tf.contrib.layers.xavier_initializer(uniform = False))
+			#change rel_matrix to ent_matrix, size E*sizeR to sizeR*sizeE.
+			self.ent_matrix = tf.get_variable(name = "rel_matrix", shape = [relation_total, sizeR * sizeE], initializer = tf.contrib.layers.xavier_initializer(uniform = False))
 
 		with tf.name_scope('lookup_embeddings'):
 			pos_h_e = tf.reshape(tf.nn.embedding_lookup(self.ent_embeddings, self.pos_h), [-1, sizeE, 1])
@@ -57,20 +58,29 @@ class TransRModel(object):
 			neg_h_e = tf.reshape(tf.nn.embedding_lookup(self.ent_embeddings, self.neg_h), [-1, sizeE, 1])
 			neg_t_e = tf.reshape(tf.nn.embedding_lookup(self.ent_embeddings, self.neg_t), [-1, sizeE, 1])
 			neg_r_e = tf.reshape(tf.nn.embedding_lookup(self.rel_embeddings, self.neg_r), [-1, sizeR])			
-			matrix = tf.reshape(tf.nn.embedding_lookup(self.rel_matrix, self.neg_r), [-1, sizeR, sizeE])
+			#matrix = tf.reshape(tf.nn.embedding_lookup(self.rel_matrix, self.neg_r), [-1, sizeR, sizeE])
+			matrix_pos_h = tf.reshape(tf.nn.embedding_lookup(self.ent_matrix, self.pos_h), [-1, sizeE, sizeR])
+			matrix_pos_t = tf.reshape(tf.nn.embedding_lookup(self.ent_matrix, self.pos_t), [-1, sizeE, sizeR])
+			matrix_neg_h = tf.reshape(tf.nn.embedding_lookup(self.ent_matrix, self.neg_h), [-1, sizeE, sizeR])
+			matrix_neg_t = tf.reshape(tf.nn.embedding_lookup(self.ent_matrix, self.neg_t), [-1, sizeE, sizeR])
+			
+			#pos_h_e = tf.reshape(tf.batch_matmul(matrix, pos_h_e), [-1, sizeR])
+			#pos_t_e = tf.reshape(tf.batch_matmul(matrix, pos_t_e), [-1, sizeR])
+			#neg_h_e = tf.reshape(tf.batch_matmul(matrix, neg_h_e), [-1, sizeR])
+			#neg_t_e = tf.reshape(tf.batch_matmul(matrix, neg_t_e), [-1, sizeR])
 
-			pos_h_e = tf.reshape(tf.batch_matmul(matrix, pos_h_e), [-1, sizeR])
-			pos_t_e = tf.reshape(tf.batch_matmul(matrix, pos_t_e), [-1, sizeR])
-			neg_h_e = tf.reshape(tf.batch_matmul(matrix, neg_h_e), [-1, sizeR])
-			neg_t_e = tf.reshape(tf.batch_matmul(matrix, neg_t_e), [-1, sizeR])
+			pos_r_h_e = tf.reshape(tf.batch_matmul(matrix_pos_h, pos_r_e), [-1, sizeR])
+			pos_r_t_e = tf.reshape(tf.batch_matmul(matrix_pos_t, pos_r_e), [-1, sizeR])
+			neg_r_h_e = tf.reshape(tf.batch_matmul(matrix_neg_h, neg_r_e), [-1, sizeR])
+			neg_r_t_e = tf.reshape(tf.batch_matmul(matrix_neg_t, neg_r_e), [-1, sizeR])
 
 		if config.L1_flag:
-			pos = tf.reduce_sum(abs(pos_h_e + pos_r_e - pos_t_e), 1, keep_dims = True)
-			neg = tf.reduce_sum(abs(neg_h_e + neg_r_e - neg_t_e), 1, keep_dims = True)
+			pos = tf.reduce_sum(abs(pos_h_e + pos_r_h_e - pos_t_e - pos_r_t_e), 1, keep_dims = True)
+			neg = tf.reduce_sum(abs(neg_h_e + neg_r_h_e - neg_t_e -neg_r_t_e), 1, keep_dims = True)
 			self.predict = pos
 		else:
-			pos = tf.reduce_sum((pos_h_e + pos_r_e - pos_t_e) ** 2, 1, keep_dims = True)
-			neg = tf.reduce_sum((neg_h_e + neg_r_e - neg_t_e) ** 2, 1, keep_dims = True)
+			pos = tf.reduce_sum((pos_h_e + pos_r_h_e - pos_t_e - pos_r_t_e) ** 2, 1, keep_dims = True)
+			neg = tf.reduce_sum((neg_h_e + neg_r_h_e - neg_t_e -neg_r_t_e) ** 2, 1, keep_dims = True)
 			self.predict = pos
 
 		with tf.name_scope("output"):
