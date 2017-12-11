@@ -69,10 +69,10 @@ class TransRModel(object):
 			#neg_h_e = tf.reshape(tf.batch_matmul(matrix, neg_h_e), [-1, sizeR])
 			#neg_t_e = tf.reshape(tf.batch_matmul(matrix, neg_t_e), [-1, sizeR])
 
-			pos_r_h_e = tf.reshape(tf.batch_matmul(matrix_pos_h, pos_r_e), [-1, sizeE])
-			pos_r_t_e = tf.reshape(tf.batch_matmul(matrix_pos_t, pos_r_e), [-1, sizeE])
-			neg_r_h_e = tf.reshape(tf.batch_matmul(matrix_neg_h, neg_r_e), [-1, sizeE])
-			neg_r_t_e = tf.reshape(tf.batch_matmul(matrix_neg_t, neg_r_e), [-1, sizeE])
+			pos_r_h_e = tf.reshape(tf.matmul(matrix_pos_h, pos_r_e), [-1, sizeE])
+			pos_r_t_e = tf.reshape(tf.matmul(matrix_pos_t, pos_r_e), [-1, sizeE])
+			neg_r_h_e = tf.reshape(tf.matmul(matrix_neg_h, neg_r_e), [-1, sizeE])
+			neg_r_t_e = tf.reshape(tf.matmul(matrix_neg_t, neg_r_e), [-1, sizeE])
 
 		if config.L1_flag:
 			pos = tf.reduce_sum(abs(pos_h_e + pos_r_h_e - pos_t_e - pos_r_t_e), 1, keep_dims = True)
