@@ -120,7 +120,7 @@ def main(_):
 			grads_and_vars = optimizer.compute_gradients(trainModel.loss)
 			train_op = optimizer.apply_gradients(grads_and_vars, global_step=global_step)
 			saver = tf.train.Saver()
-			sess.run(tf.initialize_all_variables())
+			sess.run(tf.global_variables_initializer())
 			if (config.loadFromData):
 				saver.restore(sess, './res/model.vec')
 
