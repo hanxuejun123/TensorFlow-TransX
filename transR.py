@@ -59,10 +59,10 @@ class TransRModel(object):
 			neg_r_e = tf.reshape(tf.nn.embedding_lookup(self.rel_embeddings, self.neg_r), [-1, sizeR])			
 			matrix = tf.reshape(tf.nn.embedding_lookup(self.rel_matrix, self.neg_r), [-1, sizeR, sizeE])
 
-			pos_h_e = tf.reshape(tf.batch_matmul(matrix, pos_h_e), [-1, sizeR])
-			pos_t_e = tf.reshape(tf.batch_matmul(matrix, pos_t_e), [-1, sizeR])
-			neg_h_e = tf.reshape(tf.batch_matmul(matrix, neg_h_e), [-1, sizeR])
-			neg_t_e = tf.reshape(tf.batch_matmul(matrix, neg_t_e), [-1, sizeR])
+			pos_h_e = tf.reshape(tf.matmul(matrix, pos_h_e), [-1, sizeR])
+			pos_t_e = tf.reshape(tf.matmul(matrix, pos_t_e), [-1, sizeR])
+			neg_h_e = tf.reshape(tf.matmul(matrix, neg_h_e), [-1, sizeR])
+			neg_t_e = tf.reshape(tf.matmul(matrix, neg_t_e), [-1, sizeR])
 
 		if config.L1_flag:
 			pos = tf.reduce_sum(abs(pos_h_e + pos_r_e - pos_t_e), 1, keep_dims = True)
@@ -102,9 +102,9 @@ def main(_):
 			grads_and_vars = optimizer.compute_gradients(trainModel.loss)
 			train_op = optimizer.apply_gradients(grads_and_vars, global_step=global_step)
 			saver = tf.train.Saver()
-			sess.run(tf.initialize_all_variables())
+			sess.run(tf.global_variables_initializer())
 			if (config.loadFromData):
-				saver.restore(sess, 'model.vec')
+				saver.restore(sess, './res/model.vec')
 
 			def train_step(pos_h_batch, pos_t_batch, pos_r_batch, neg_h_batch, neg_t_batch, neg_r_batch):
 				feed_dict = {
@@ -158,7 +158,7 @@ def main(_):
 						current_step = tf.train.global_step(sess, global_step)
 					print times
 					print res
-				saver.save(sess, 'model.vec')
+				saver.save(sess, './res/model.vec')
 			else:
 				total = test_lib.getTestTotal()
 				for times in range(total):
