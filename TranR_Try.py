@@ -23,7 +23,7 @@ class Config(object):
 		self.nbatches = 100
 		self.entity = 0
 		self.relation = 0
-		self.trainTimes = 3000
+		self.trainTimes = 600
 		self.margin = 1.0
 
 class TransRModel(object):
