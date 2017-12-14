@@ -15,8 +15,8 @@ class Config(object):
 	def __init__(self):
 		lib.setInPath("./data/FB15K/")
 		test_lib.setInPath("./data/FB15K/")
-		self.testFlag = True
-		self.loadFromData = True
+		self.testFlag = False
+		self.loadFromData = False
 		self.L1_flag = True
 		self.hidden_sizeE = 100
 		self.hidden_sizeR = 100
@@ -57,12 +57,14 @@ class TransRModel(object):
 			neg_h_e = tf.reshape(tf.nn.embedding_lookup(self.ent_embeddings, self.neg_h), [-1, sizeE, 1])
 			neg_t_e = tf.reshape(tf.nn.embedding_lookup(self.ent_embeddings, self.neg_t), [-1, sizeE, 1])
 			neg_r_e = tf.reshape(tf.nn.embedding_lookup(self.rel_embeddings, self.neg_r), [-1, sizeR])			
-			matrix = tf.reshape(tf.nn.embedding_lookup(self.rel_matrix, self.neg_r), [-1, sizeR, sizeE])
+			
+			matrix_p = tf.reshape(tf.nn.embedding_lookup(self.rel_matrix, self.pos_r), [-1, sizeR, sizeE])
+			matrix_n = tf.reshape(tf.nn.embedding_lookup(self.rel_matrix, self.neg_r), [-1, sizeR, sizeE])
 
-			pos_h_e = tf.reshape(tf.matmul(matrix, pos_h_e), [-1, sizeR])
-			pos_t_e = tf.reshape(tf.matmul(matrix, pos_t_e), [-1, sizeR])
-			neg_h_e = tf.reshape(tf.matmul(matrix, neg_h_e), [-1, sizeR])
-			neg_t_e = tf.reshape(tf.matmul(matrix, neg_t_e), [-1, sizeR])
+			pos_h_e = tf.reshape(tf.matmul(matrix_p, pos_h_e), [-1, sizeR])
+			pos_t_e = tf.reshape(tf.matmul(matrix_p, pos_t_e), [-1, sizeR])
+			neg_h_e = tf.reshape(tf.matmul(matrix_n, neg_h_e), [-1, sizeR])
+			neg_t_e = tf.reshape(tf.matmul(matrix_n, neg_t_e), [-1, sizeR])
 
 		if config.L1_flag:
 			pos = tf.reduce_sum(abs(pos_h_e + pos_r_e - pos_t_e), 1, keep_dims = True)
