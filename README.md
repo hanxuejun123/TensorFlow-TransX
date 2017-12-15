@@ -30,52 +30,76 @@ bash make.sh
 
 # Train
 
-To train models based on random initialization:
+To train our models based on random initialization:
 
-1. Change class Config in transX.py
+1. Change class Config in OurModel.py
 
 		class Config(object):
 	
 			def __init__(self):
 				...
-				lib.setInPath("your training data path...")
 				self.testFlag = False
 				self.loadFromData = False
+				self.L1_flag = True	# True for L1 and False for L2
+				self.hidden_sizeE = 100	    # hidden size of entity embedding space
+				self.hidden_sizeR = 100	    # hidden size of relation embedding space
+				self.nbatches = 100	# the number of mini-batches = totaltriples//batch_size
+				self.entity = 0
+				self.relation = 0
+				self.trainTimes = 600     # training times
+				self.margin = 1.0	# margin
 				...
 
-2. python transX.py
+2. python OurModel.py
 
 To train models based on pretrained results:
 
-1. Change class Config in transX.py
+1. Change class Config in OurModel.py
 
 		class Config(object):
 	
 			def __init__(self):
 				...
-				lib.setInPath("your training data path...")
+				...
 				self.testFlag = False
 				self.loadFromData = True
+				self.L1_flag = True	# True for L1 and False for L2
+				self.hidden_sizeE = 100	    # hidden size of entity embedding space
+				self.hidden_sizeR = 100	    # hidden size of relation embedding space
+				self.nbatches = 100	# the number of mini-batches = totaltriples//batch_size
+				self.entity = 0
+				self.relation = 0
+				self.trainTimes = 600     # training times
+				self.margin = 1.0	# margin
+				...
 				...
 
-2. python transX.py
+2. python OurModel.py
 
 # Test
 
 To test your models:
 
-1. Change class Config in transX.py
+1. Change class Config in OurModel.py
 	
 		class Config(object):
 
 			def __init__(self):
 				...
-				test_lib.setInPath("your testing data path...")
+				...
 				self.testFlag = True
 				self.loadFromData = True
+				self.L1_flag = True	# True for L1 and False for L2
+				self.hidden_sizeE = 100	    # hidden size of entity embedding space
+				self.hidden_sizeR = 100	    # hidden size of relation embedding space
+				self.nbatches = 100	# the number of mini-batches = totaltriples//batch_size
+				self.entity = 0
+				self.relation = 0
+				self.trainTimes = 600     # training times
+				self.margin = 1.0	# margin
 				...
 
-2. python transX.py
+2. python OurModel.py
 
 
 
